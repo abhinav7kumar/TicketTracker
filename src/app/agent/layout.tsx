@@ -141,7 +141,9 @@ export default function AgentLayout({
                 <DropdownMenuItem asChild>
                   <Link href="/agent/profile">Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/agent/settings">Settings</Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/login">Logout</Link>
