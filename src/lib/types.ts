@@ -5,6 +5,8 @@ export type User = {
   email: string;
   avatar: string;
   role: 'user' | 'agent' | 'admin';
+  registrationDate: string;
+  lastLogin: string;
 };
 
 export type Comment = {

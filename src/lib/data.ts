@@ -8,6 +8,8 @@ export const users: User[] = [
     email: 'alex.j@example.com',
     avatar: '/avatars/01.png',
     role: 'user',
+    registrationDate: '2024-04-01T10:00:00Z',
+    lastLogin: '2024-05-25T14:20:00Z',
   },
   {
     id: 'user-2',
@@ -15,6 +17,8 @@ export const users: User[] = [
     email: 'maria.g@example.com',
     avatar: '/avatars/02.png',
     role: 'user',
+    registrationDate: '2024-03-15T08:30:00Z',
+    lastLogin: '2024-05-24T09:15:00Z',
   },
   {
     id: 'agent-1',
@@ -22,6 +26,8 @@ export const users: User[] = [
     email: 'sam.w@support.com',
     avatar: 'https://i.pravatar.cc/150?u=agent-1',
     role: 'agent',
+    registrationDate: '2024-02-01T09:00:00Z',
+    lastLogin: '2024-05-25T15:00:00Z',
   },
   {
     id: 'agent-2',
@@ -29,6 +35,8 @@ export const users: User[] = [
     email: 'jessica.c@support.com',
     avatar: 'https://i.pravatar.cc/150?u=agent-2',
     role: 'agent',
+    registrationDate: '2024-02-05T11:00:00Z',
+    lastLogin: '2024-05-24T12:00:00Z',
   },
   {
     id: 'admin-1',
@@ -36,6 +44,8 @@ export const users: User[] = [
     email: 'admin@tickettrack.com',
     avatar: 'https://i.pravatar.cc/150?u=admin-1',
     role: 'admin',
+    registrationDate: '2024-01-01T00:00:00Z',
+    lastLogin: '2024-05-25T18:00:00Z',
   },
 ];
 
