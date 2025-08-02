@@ -100,7 +100,16 @@ export default function AgentLayout({
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
-            {/* Agent-specific footer items if any */}
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Profile">
+                  <Link href="/agent/profile">
+                    <UserCircle />
+                    <span>Profile</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
 
@@ -129,6 +138,9 @@ export default function AgentLayout({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>{agent?.name || 'Agent'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/agent/profile">Profile</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
