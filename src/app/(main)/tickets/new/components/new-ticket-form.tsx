@@ -160,7 +160,7 @@ export default function NewTicketForm() {
                 <FormItem>
                   <FormLabel>Attachments</FormLabel>
                   <FormControl>
-                    <Input type="file" {...field} />
+                    <Input type="file" />
                   </FormControl>
                   <FormDescription>
                     Max 5MB per file. Allowed types: png, jpg, jpeg, pdf, doc,

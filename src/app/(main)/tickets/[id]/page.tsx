@@ -1,6 +1,7 @@
+
 'use client';
 
-import { notFound } from 'next/navigation';
+import { notFound, usePathname } from 'next/navigation';
 import { tickets, users } from '@/lib/data';
 import {
   Card,
@@ -28,6 +29,7 @@ const statusVariantMap: { [key: string]: 'default' | 'secondary' | 'outline' | '
 };
 
 export default function TicketDetailPage({ params }: { params: { id: string } }) {
+  const pathname = usePathname();
   const ticket = tickets.find((t) => t.id === params.id);
   const { toast } = useToast();
   const [feedback, setFeedback] = useState<'upvote' | 'downvote' | null>(ticket?.feedback || null);
@@ -35,19 +37,22 @@ export default function TicketDetailPage({ params }: { params: { id: string } })
   if (!ticket) {
     notFound();
   }
+  
+  // Determine role based on the current URL path
+  const role = pathname.includes('/agent/') ? 'agent' : 'user';
 
   const handleFeedback = (newFeedback: 'upvote' | 'downvote') => {
     if (feedback === newFeedback) {
       // If user clicks the same button again, deselect it.
       setFeedback(null);
-      // In a real app, you would update the database here.
+      if (ticket) ticket.feedback = undefined;
       toast({
         title: 'Feedback Removed',
         description: 'Your feedback has been withdrawn.',
       });
     } else {
       setFeedback(newFeedback);
-      // In a real app, you would update the database here.
+       if (ticket) ticket.feedback = newFeedback;
       toast({
         title: 'Thank you for your feedback!',
         description: 'We appreciate you helping us improve our support.',
@@ -106,7 +111,7 @@ export default function TicketDetailPage({ params }: { params: { id: string } })
           </CardContent>
         </Card>
 
-        <CommentSection comments={ticket.comments} ticketId={ticket.id} />
+        <CommentSection comments={ticket.comments} ticketId={ticket.id} role={role}/>
       </div>
 
       <div className="space-y-6">

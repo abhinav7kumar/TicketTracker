@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -11,7 +12,7 @@ import type { Comment } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { addCommentAction } from '../../actions';
 
-export function CommentSection({ comments, ticketId }: { comments: Comment[], ticketId: string }) {
+export function CommentSection({ comments, ticketId, role }: { comments: Comment[], ticketId: string, role: 'user' | 'agent' }) {
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -22,9 +23,13 @@ export function CommentSection({ comments, ticketId }: { comments: Comment[], ti
 
     setIsSubmitting(true);
     
+    // In a real app, you'd get the current user/agent ID from the session
+    const authorId = role === 'agent' ? 'agent-1' : 'user-1';
+
     const result = await addCommentAction({
       ticketId,
       content: newComment,
+      authorId,
     });
     
     if (result.success) {
@@ -33,7 +38,6 @@ export function CommentSection({ comments, ticketId }: { comments: Comment[], ti
         description: 'Your reply has been posted.',
       });
       setNewComment('');
-      // In a real app, you would likely refetch comments here or optimistically update the UI
     } else {
       toast({
         variant: 'destructive',
@@ -56,7 +60,7 @@ export function CommentSection({ comments, ticketId }: { comments: Comment[], ti
             comments.map((comment) => (
               <div key={comment.id} className="flex gap-4">
                 <Avatar>
-                  <AvatarImage src={`https://i.pravatar.cc/150?u=${comment.author.id}`} />
+                  <AvatarImage src={comment.author.avatar} />
                   <AvatarFallback>
                     {comment.author.name
                       .split(' ')
@@ -74,7 +78,7 @@ export function CommentSection({ comments, ticketId }: { comments: Comment[], ti
                     </p>
                   </div>
                   <div className="prose prose-sm dark:prose-invert max-w-none mt-1">
-                    {comment.content}
+                    <p>{comment.content}</p>
                   </div>
                 </div>
               </div>
@@ -89,7 +93,7 @@ export function CommentSection({ comments, ticketId }: { comments: Comment[], ti
           <Textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Type your reply here. Use @ to mention a support agent..."
+            placeholder="Type your reply here..."
             className="min-h-[120px]"
             disabled={isSubmitting}
           />
