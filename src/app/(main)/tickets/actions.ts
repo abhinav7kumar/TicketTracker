@@ -1,3 +1,4 @@
+
 'use server';
 
 import { suggestTicketTags } from '@/ai/flows/suggest-ticket-tags';
@@ -8,13 +9,13 @@ export async function suggestTagsAction(input: { newTicketDescription: string })
   try {
     // For demo purposes, we find the first resolved ticket to use as context for the AI.
     // In a real application, you might use vector search to find a truly similar ticket.
-    const resolvedTicket = tickets.find((t) => t.status === 'Resolved' && t.feedback);
+    const resolvedTicket = tickets.find((t) => t.status === 'Resolved');
     if (!resolvedTicket) {
       return { success: false, error: 'No relevant resolved tickets found to learn from.' };
     }
 
     const aiInput = {
-      feedback: resolvedTicket.feedback || 'upvote',
+      feedback: resolvedTicket.feedback || 'upvote', // Default to upvote if no feedback exists
       ticketDescription: resolvedTicket.description,
       newTicketDescription: input.newTicketDescription,
     };
