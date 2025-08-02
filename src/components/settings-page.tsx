@@ -43,7 +43,7 @@ export default function SettingsPage() {
           <RadioGroup
             value={theme}
             onValueChange={setTheme}
-            className="grid max-w-md grid-cols-1 sm:grid-cols-3 gap-8 pt-2"
+            className="grid max-w-md grid-cols-1 sm:grid-cols-2 gap-8 pt-2"
           >
             <Label className="cursor-pointer">
               <RadioGroupItem value="light" id="light" className="sr-only" />
@@ -87,17 +87,6 @@ export default function SettingsPage() {
               </div>
               <span className="block w-full p-2 text-center font-normal">
                 Dark
-              </span>
-            </Label>
-             <Label className="cursor-pointer">
-              <RadioGroupItem value="system" id="system" className="sr-only" />
-              <div className="items-center rounded-md border-2 border-muted bg-popover p-1 hover:bg-accent hover:text-accent-foreground has-[input:checked]:border-primary">
-                 <div className="flex h-[116px] items-center justify-center rounded-md bg-background p-2 text-sm font-medium text-foreground">
-                    System
-                  </div>
-              </div>
-              <span className="block w-full p-2 text-center font-normal">
-                System
               </span>
             </Label>
           </RadioGroup>
