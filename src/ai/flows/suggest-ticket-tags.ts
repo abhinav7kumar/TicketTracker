@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview A flow for suggesting ticket tags based on resolution feedback.
+ * @fileOverview A flow for suggesting ticket tags based on existing tickets.
  *
- * - suggestTicketTags - A function that suggests tags for new tickets based on feedback on resolved tickets.
+ * - suggestTicketTags - A function that suggests tags for new tickets based on the content of a resolved ticket.
  * - SuggestTicketTagsInput - The input type for the suggestTicketTags function.
  * - SuggestTicketTagsOutput - The return type for the suggestTicketTags function.
  */
@@ -12,18 +12,15 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SuggestTicketTagsInputSchema = z.object({
-  feedback: z
-    .string()
-    .describe("Feedback on the resolved ticket, either 'upvote' or 'downvote'."),
-  ticketDescription: z.string().describe('The description of the resolved ticket.'),
-  newTicketDescription: z.string().describe('The description of the new ticket.'),
+  resolvedTicketDescription: z.string().describe('The description of a resolved ticket to learn from.'),
+  newTicketDescription: z.string().describe('The description of the new ticket that needs tags.'),
 });
 export type SuggestTicketTagsInput = z.infer<typeof SuggestTicketTagsInputSchema>;
 
 const SuggestTicketTagsOutputSchema = z.object({
   suggestedTags: z
     .array(z.string())
-    .describe('Suggested tags for the new ticket based on the feedback.'),
+    .describe('Suggested tags for the new ticket.'),
 });
 export type SuggestTicketTagsOutput = z.infer<typeof SuggestTicketTagsOutputSchema>;
 
@@ -35,14 +32,13 @@ const prompt = ai.definePrompt({
   name: 'suggestTicketTagsPrompt',
   input: {schema: SuggestTicketTagsInputSchema},
   output: {schema: SuggestTicketTagsOutputSchema},
-  prompt: `You are a ticket tagging expert. Based on the feedback provided for a resolved ticket and its description, suggest relevant tags for a new, similar ticket.
+  prompt: `You are a ticket tagging expert. Based on the description of a previously resolved ticket, suggest relevant tags for a new ticket.
 
-Resolved Ticket Description: {{{ticketDescription}}}
-Feedback: {{{feedback}}}
+Resolved Ticket Description: {{{resolvedTicketDescription}}}
 
 New Ticket Description: {{{newTicketDescription}}}
 
-Suggested Tags:`,
+Based on the resolved ticket, provide a few concise tags that would be appropriate for the new ticket.`,
 });
 
 const suggestTicketTagsFlow = ai.defineFlow(

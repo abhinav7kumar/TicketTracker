@@ -15,15 +15,15 @@ export async function suggestTagsAction(input: { newTicketDescription: string })
     }
 
     const aiInput = {
-      feedback: resolvedTicket.feedback || 'upvote', // Default to upvote if no feedback exists
-      ticketDescription: resolvedTicket.description,
+      resolvedTicketDescription: resolvedTicket.description,
       newTicketDescription: input.newTicketDescription,
     };
     
     const { suggestedTags } = await suggestTicketTags(aiInput);
     
     if (!suggestedTags || suggestedTags.length === 0) {
-      return { success: true, data: ['No suggestions found'] };
+      // Return a default suggestion if the AI doesn't provide any.
+      return { success: true, data: ['General'] };
     }
 
     return { success: true, data: suggestedTags };
