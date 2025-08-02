@@ -1,3 +1,4 @@
+
 import type { User, Ticket } from './types';
 
 export const users: User[] = [
@@ -6,18 +7,35 @@ export const users: User[] = [
     name: 'Alex Johnson',
     email: 'alex.j@example.com',
     avatar: '/avatars/01.png',
+    role: 'user',
   },
   {
     id: 'user-2',
     name: 'Maria Garcia',
     email: 'maria.g@example.com',
     avatar: '/avatars/02.png',
+    role: 'user',
   },
   {
-    id: 'support-1',
+    id: 'agent-1',
     name: 'Sam Wilson',
     email: 'sam.w@support.com',
-    avatar: '/avatars/03.png',
+    avatar: 'https://i.pravatar.cc/150?u=agent-1',
+    role: 'agent',
+  },
+  {
+    id: 'agent-2',
+    name: 'Jessica Chen',
+    email: 'jessica.c@support.com',
+    avatar: 'https://i.pravatar.cc/150?u=agent-2',
+    role: 'agent',
+  },
+  {
+    id: 'admin-1',
+    name: 'Admin User',
+    email: 'admin@tickettrack.com',
+    avatar: 'https://i.pravatar.cc/150?u=admin-1',
+    role: 'admin',
   },
 ];
 
@@ -30,6 +48,7 @@ export const tickets: Ticket[] = [
     status: 'Resolved',
     category: 'Technical Support',
     createdBy: 'user-1',
+    assignedTo: 'agent-1',
     createdAt: '2024-05-20T10:00:00Z',
     lastModified: '2024-05-23T14:30:00Z',
     feedback: 'upvote',
@@ -37,14 +56,14 @@ export const tickets: Ticket[] = [
       {
         id: 'comment-1',
         ticketId: 'TKT-001',
-        author: users[2],
+        author: users.find(u => u.id === 'agent-1')!,
         content: 'Hi Alex, I will look into this for you. I will manually trigger a password reset link to your email.',
         createdAt: '2024-05-20T11:00:00Z',
       },
       {
         id: 'comment-2',
         ticketId: 'TKT-001',
-        author: users[0],
+        author: users.find(u => u.id === 'user-1')!,
         content: 'Thank you, Sam! I received it and was able to reset my password.',
         createdAt: '2024-05-20T11:30:00Z',
       },
@@ -58,13 +77,14 @@ export const tickets: Ticket[] = [
     status: 'In Progress',
     category: 'Billing',
     createdBy: 'user-2',
+    assignedTo: 'agent-2',
     createdAt: '2024-05-22T09:15:00Z',
     lastModified: '2024-05-24T11:00:00Z',
     comments: [
       {
         id: 'comment-3',
         ticketId: 'TKT-002',
-        author: users[2],
+        author: users.find(u => u.id === 'agent-2')!,
         content: "Hi Maria, I'm checking with our billing department regarding the service fee on your invoice. I'll get back to you shortly.",
         createdAt: '2024-05-22T09:45:00Z',
       },
@@ -101,13 +121,14 @@ export const tickets: Ticket[] = [
     status: 'In Progress',
     category: 'Bug Report',
     createdBy: 'user-1',
+    assignedTo: 'agent-1',
     createdAt: '2024-05-25T14:20:00Z',
     lastModified: '2024-05-25T15:00:00Z',
     comments: [
        {
         id: 'comment-4',
         ticketId: 'TKT-005',
-        author: users[2],
+        author: users.find(u => u.id === 'agent-1')!,
         content: "Thanks for reporting this, Alex. We're investigating a potential issue with our file upload service and will update you here.",
         createdAt: '2024-05-25T15:00:00Z',
       },
@@ -121,13 +142,14 @@ export const tickets: Ticket[] = [
     status: 'Closed',
     category: 'General Inquiry',
     createdBy: 'user-2',
+    assignedTo: 'agent-2',
     createdAt: '2024-05-18T10:00:00Z',
     lastModified: '2024-05-19T12:00:00Z',
     comments: [
         {
         id: 'comment-5',
         ticketId: 'TKT-006',
-        author: users[2],
+        author: users.find(u => u.id === 'agent-2')!,
         content: "Hi Maria, this feature is not yet available, but we're planning to add it in a future update. I'll mark this ticket as closed for now.",
         createdAt: '2024-05-19T12:00:00Z',
       },

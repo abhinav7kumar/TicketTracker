@@ -8,6 +8,7 @@ import {
   PlusCircle,
   Ticket,
   UserCircle,
+  Users,
 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 
@@ -33,10 +34,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { users } from '@/lib/data';
 
 const navItems = [
   {
-    href: '/dashboard',
+    href: '/agent/dashboard',
     icon: LayoutDashboard,
     label: 'Dashboard',
   },
@@ -45,52 +47,25 @@ const navItems = [
     icon: PlusCircle,
     label: 'New Ticket',
   },
+   {
+    href: '/agent/users',
+    icon: Users,
+    label: 'Users',
+  },
 ];
 
-export default function AppLayout({
+export default function AgentLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  const [profile, setProfile] = useState({ name: '', avatar: ''});
+  // In a real app, you would get agent details from auth session
+  const agent = users.find(u => u.id === 'agent-1');
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedProfile = localStorage.getItem('userProfile');
-      if (storedProfile) {
-        try {
-          const parsedProfile = JSON.parse(storedProfile);
-          setProfile({
-            name: parsedProfile.name || 'User',
-            avatar: parsedProfile.avatar || '',
-          });
-        } catch (e) {
-          console.error("Failed to parse user profile from localStorage", e);
-        }
-      }
-      
-      const handleStorageChange = () => {
-        const updatedProfile = localStorage.getItem('userProfile');
-        if(updatedProfile) {
-            const parsed = JSON.parse(updatedProfile);
-            setProfile({ name: parsed.name, avatar: parsed.avatar });
-        }
-      };
-
-      window.addEventListener('storage', handleStorageChange);
-      // Set initial profile
-      handleStorageChange();
-
-      return () => {
-        window.removeEventListener('storage', handleStorageChange);
-      };
-    }
-  }, []);
-
-  const getInitials = (name: string) => {
-    if (!name) return '';
+  const getInitials = (name?: string) => {
+    if (!name) return 'A';
     return name.split(' ').map(n => n[0]).join('');
   }
   
@@ -103,7 +78,7 @@ export default function AppLayout({
         >
           <SidebarHeader>
             <Link
-              href="/dashboard"
+              href="/agent/dashboard"
               className="flex items-center gap-2 font-bold text-lg font-headline text-sidebar-foreground"
             >
               <Ticket className="w-7 h-7 text-primary" />
@@ -131,16 +106,7 @@ export default function AppLayout({
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Profile">
-                  <Link href="/profile">
-                    <UserCircle />
-                    <span>Profile</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
+            {/* Agent-specific footer items if any */}
           </SidebarFooter>
         </Sidebar>
 
@@ -148,7 +114,7 @@ export default function AppLayout({
           <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:px-6">
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1">
-              {/* Optional Header Content like breadcrumbs can go here */}
+              <p className="font-semibold">Agent Portal</p>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -159,19 +125,16 @@ export default function AppLayout({
                 >
                   <Avatar>
                     <AvatarImage
-                      src={profile.avatar}
-                      alt="User Avatar"
+                      src={agent?.avatar}
+                      alt="Agent Avatar"
                     />
-                    <AvatarFallback>{getInitials(profile.name)}</AvatarFallback>
+                    <AvatarFallback>{getInitials(agent?.name)}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{agent?.name || 'Agent'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">Profile</Link>
-                </DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>

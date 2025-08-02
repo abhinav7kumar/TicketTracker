@@ -1,18 +1,18 @@
 
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AtSign, KeyRound } from "lucide-react";
-import * as z from "zod";
+import { AtSign, KeyRound, ShieldAlert } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -25,60 +25,54 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
+  email: z.string().email(),
   password: z.string().min(1, { message: "Password is required." }),
-  role: z.enum(["user", "agent"], {
-    required_error: "Please select a role.",
-  }),
 });
 
-export default function LoginPage() {
+// In a real app, you would fetch admin credentials securely.
+const ADMIN_EMAIL = "admin@tickettrack.com";
+const ADMIN_PASSWORD = "adminpassword"; // Use a strong, hashed password in production
+
+export default function AdminLoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // In a real app, you'd handle authentication against a database
-    // based on the selected role.
-    toast({
-      title: "Login Successful",
-      description: `Welcome back! Redirecting to ${
-        values.role === "user" ? "End User" : "Support Agent"
-      } dashboard.`,
-    });
-
-    if (values.role === "agent") {
-      router.push("/agent/dashboard");
+    if (values.email === ADMIN_EMAIL && values.password === ADMIN_PASSWORD) {
+      toast({
+        title: "Admin Login Successful",
+        description: "Redirecting to the Admin Dashboard.",
+      });
+      router.push("/admin/dashboard");
     } else {
-      router.push("/dashboard");
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid email or password.",
+      });
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md shadow-2xl">
+    <div className="flex min-h-screen items-center justify-center bg-destructive/10 p-4">
+      <Card className="w-full max-w-md shadow-2xl border-destructive">
         <CardHeader className="text-center">
-          <h1 className="text-3xl font-headline">TicketTrack</h1>
-          <CardTitle className="text-2xl font-headline">Welcome Back</CardTitle>
+          <div className="mx-auto bg-destructive/90 text-destructive-foreground rounded-full p-3 w-fit">
+            <ShieldAlert className="h-8 w-8" />
+          </div>
+          <h1 className="text-3xl font-headline mt-4">TicketTrack</h1>
+          <CardTitle className="text-2xl font-headline">Admin Access</CardTitle>
           <CardDescription>
-            Enter your credentials to access your account.
+            This area is for authorized personnel only.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -89,13 +83,13 @@ export default function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Admin Email</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input
                           type="email"
-                          placeholder="your@email.com"
+                          placeholder="admin@tickettrack.com"
                           className="pl-10"
                           {...field}
                         />
@@ -110,7 +104,7 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Admin Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -126,43 +120,14 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Login as</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="user">End User</SelectItem>
-                        <SelectItem value="agent">Support Agent</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button type="submit" className="w-full">
-                Sign In
+              <Button type="submit" className="w-full" variant="destructive">
+                Sign In as Admin
               </Button>
-              <div className="flex justify-between w-full text-sm">
-                <Button variant="link" asChild className="p-0">
-                  <Link href="/register">Don't have an account?</Link>
+               <Button variant="link" asChild className="p-0 text-sm">
+                  <Link href="/login">Return to main login</Link>
                 </Button>
-                <Button variant="link" asChild className="p-0">
-                  <Link href="/admin/login">Admin Login</Link>
-                </Button>
-              </div>
             </CardFooter>
           </form>
         </Form>
