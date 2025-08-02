@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
-import { Bot, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -34,9 +34,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { suggestTagsAction, createTicketAction } from '../../actions';
+import { createTicketAction } from '../../actions';
 
 const formSchema = z.object({
   subject: z.string().min(5, 'Subject must be at least 5 characters.'),
@@ -49,8 +48,6 @@ export default function NewTicketForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuggesting, setIsSuggesting] = useState(false);
-  const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,39 +77,6 @@ export default function NewTicketForm() {
     }
 
     setIsSubmitting(false);
-  };
-  
-  const handleSuggestTags = async () => {
-    const description = form.getValues('description');
-    if (!description || description.length < 20) {
-      toast({
-        variant: 'destructive',
-        title: 'Description too short',
-        description: 'Please enter a description of at least 20 characters to get suggestions.',
-      });
-      return;
-    }
-    
-    setIsSuggesting(true);
-    setSuggestedTags([]);
-
-    const result = await suggestTagsAction({ newTicketDescription: description });
-    
-    if (result.success && result.data) {
-      setSuggestedTags(result.data);
-      toast({
-        title: 'Tags suggested!',
-        description: 'AI has suggested some tags for your ticket.',
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: result.error || 'Could not suggest tags.',
-      });
-    }
-
-    setIsSuggesting(false);
   };
 
   return (
@@ -186,27 +150,6 @@ export default function NewTicketForm() {
               )}
             />
             
-            <div>
-              <FormLabel>AI Tag Suggestions</FormLabel>
-              <div className="flex items-start gap-4 mt-2">
-                 <Button type="button" variant="outline" onClick={handleSuggestTags} disabled={isSuggesting}>
-                   {isSuggesting ? (
-                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                   ) : (
-                     <Bot className="mr-2 h-4 w-4" />
-                   )}
-                   Suggest Tags
-                 </Button>
-                 <div className="flex flex-wrap gap-2 items-center min-h-[40px]">
-                   {suggestedTags.length > 0 ? (
-                     suggestedTags.map((tag) => <Badge key={tag} variant="secondary">{tag}</Badge>)
-                   ) : (
-                     <p className="text-sm text-muted-foreground">{isSuggesting ? 'Thinking...' : 'Click "Suggest Tags" to get AI-powered recommendations.'}</p>
-                   )}
-                 </div>
-              </div>
-            </div>
-
             <FormField
               control={form.control}
               name="attachments"
