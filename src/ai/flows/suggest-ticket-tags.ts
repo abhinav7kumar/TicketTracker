@@ -24,22 +24,6 @@ const SuggestTicketTagsOutputSchema = z.object({
 });
 export type SuggestTicketTagsOutput = z.infer<typeof SuggestTicketTagsOutputSchema>;
 
-export async function suggestTicketTags(input: SuggestTicketTagsInput): Promise<SuggestTicketTagsOutput> {
-  return suggestTicketTagsFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'suggestTicketTagsPrompt',
-  input: {schema: SuggestTicketTagsInputSchema},
-  output: {schema: SuggestTicketTagsOutputSchema},
-  prompt: `You are a ticket tagging expert. Based on the description of a previously resolved ticket, suggest relevant tags for a new ticket.
-
-Resolved Ticket Description: {{{resolvedTicketDescription}}}
-
-New Ticket Description: {{{newTicketDescription}}}
-
-Based on the resolved ticket, provide a few concise tags that would be appropriate for the new ticket.`,
-});
 
 const suggestTicketTagsFlow = ai.defineFlow(
   {
@@ -47,10 +31,24 @@ const suggestTicketTagsFlow = ai.defineFlow(
     inputSchema: SuggestTicketTagsInputSchema,
     outputSchema: SuggestTicketTagsOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return {
-      suggestedTags: output?.suggestedTags || [],
-    };
+  async (input) => {
+    const prompt = `You are a ticket tagging expert. Based on the description of a previously resolved ticket, suggest relevant tags for a new ticket.
+
+Resolved Ticket Description: ${input.resolvedTicketDescription}
+
+New Ticket Description: ${input.newTicketDescription}
+
+Based on the resolved ticket, provide a few concise tags that would be appropriate for the new ticket.`;
+
+    const {output} = await ai.generate({
+        prompt,
+        output: { schema: SuggestTicketTagsOutputSchema },
+    });
+    
+    return output || { suggestedTags: [] };
   }
 );
+
+export async function suggestTicketTags(input: SuggestTicketTagsInput): Promise<SuggestTicketTagsOutput> {
+  return suggestTicketTagsFlow(input);
+}
