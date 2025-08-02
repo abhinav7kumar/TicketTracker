@@ -13,17 +13,17 @@ type EmailPayload = {
 // and securely manage your credentials.
 const transporter = nodemailer.createTransport({
   // For demo, we use a mock server. Replace with your SMTP settings.
-  host: 'smtp.ethereal.email',
+  host: 'smtp.gmail.com',
   port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.MAIL_USER || 'arianna.schultz88@ethereal.email',
-    pass: process.env.MAIL_PASS || 'TpqzRwH5hNqJ4jK5k4',
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
   },
 });
 
 export const sendEmail = async (data: EmailPayload) => {
-  if (!process.env.MAIL_USER) {
+  if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
     console.warn(
       'Email credentials not found. Skipping email sending. Set MAIL_USER and MAIL_PASS in .env'
     );
@@ -32,7 +32,7 @@ export const sendEmail = async (data: EmailPayload) => {
   }
 
   const options = {
-    from: '"TicketTrack Lite" <noreply@ticketrack.com>',
+    from: `"TicketTrack Lite" <${process.env.MAIL_USER}>`,
     to: data.to,
     subject: data.subject,
     html: data.body,
@@ -41,8 +41,6 @@ export const sendEmail = async (data: EmailPayload) => {
   try {
     const info = await transporter.sendMail(options);
     console.log('Message sent: %s', info.messageId);
-    // Preview URL only available when using an Ethereal account
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     return { success: true };
   } catch (error) {
     console.error('Error sending email:', error);
