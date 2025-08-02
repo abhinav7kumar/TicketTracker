@@ -11,37 +11,19 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
-  const [language, setLanguage] = useState('en');
   const [fontSize, setFontSize] = useState('medium');
 
   useEffect(() => {
-    const storedLanguage = localStorage.getItem('language');
-    if (storedLanguage) {
-      setLanguage(storedLanguage);
-    }
     const storedFontSize = localStorage.getItem('fontSize');
     if (storedFontSize) {
       setFontSize(storedFontSize);
       document.documentElement.style.fontSize = getFontSizeValue(storedFontSize);
     }
   }, []);
-
-  const handleLanguageChange = (value: string) => {
-    setLanguage(value);
-    localStorage.setItem('language', value);
-    // In a real app, you would trigger a language change event here
-  };
 
   const getFontSizeValue = (size: string) => {
     if (size === 'small') return '14px';
@@ -129,23 +111,6 @@ export default function SettingsPage() {
                 </span>
               </Label>
             </RadioGroup>
-          </div>
-
-          <div>
-             <Label htmlFor="language">Language</Label>
-             <p className="text-sm text-muted-foreground">
-              Select your preferred language.
-            </p>
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-full max-w-md mt-4">
-                <SelectValue placeholder="Select language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
            <div>
