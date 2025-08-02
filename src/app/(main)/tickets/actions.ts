@@ -28,7 +28,7 @@ export async function createTicketAction(input: {
     console.log('Creating ticket:', newTicket);
 
     await sendEmail({
-      to: 'abhinav.kumar9888@gmail.com',
+      to: 'alex.j@example.com', // In a real app, use the creator's email
       subject: `[New Ticket] ${input.subject}`,
       body: `<h1>New Ticket Created</h1>
              <p>A new ticket has been submitted with the following details:</p>
@@ -95,9 +95,46 @@ export async function addCommentAction(input: {
     }
 
     revalidatePath(`/tickets/${ticketId}`);
+    revalidatePath('/agent/dashboard');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Add Comment Error:', error);
     return { success: false, error: 'Failed to add comment.' };
+  }
+}
+
+
+export async function assignTicketAction(input: {
+  ticketId: string;
+  agentId: string;
+}) {
+  try {
+    const { ticketId, agentId } = input;
+    const ticket = tickets.find((t) => t.id === ticketId);
+    const agent = users.find((u) => u.id === agentId && u.role === 'agent');
+
+    if (!ticket) {
+      return { success: false, error: 'Ticket not found.' };
+    }
+    if (!agent) {
+      return { success: false, error: 'Agent not found.' };
+    }
+
+    ticket.assignedTo = agentId;
+    ticket.lastModified = new Date().toISOString();
+    if(ticket.status === 'Open') {
+      ticket.status = 'In Progress';
+    }
+
+    console.log(`Ticket ${ticketId} assigned to ${agent.name}`);
+
+    // Revalidate paths to update the tables
+    revalidatePath('/agent/dashboard');
+
+    return { success: true, agentName: agent.name };
+  } catch (error) {
+    console.error('Assign Ticket Error:', error);
+    return { success: false, error: 'Failed to assign ticket.' };
   }
 }

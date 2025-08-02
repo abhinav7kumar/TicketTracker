@@ -58,6 +58,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { users } from '@/lib/data';
+import { assignTicketAction } from '@/app/(main)/tickets/actions';
+
 
 const statusVariantMap: {
   [key: string]: 'default' | 'secondary' | 'outline' | 'destructive';
@@ -81,16 +83,27 @@ export default function AgentTicketDataTable({
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('all');
   const [categoryFilter, setCategoryFilter] = React.useState('all');
+  const [isAssigning, setIsAssigning] = React.useState(false);
+  // In a real app, you'd get the current agent's ID from session/auth
+  const currentAgentId = 'agent-1';
 
-  const handleAssign = (ticketId: string, agentId: string) => {
-    // In a real app, this would be a server action
-    const agent = agents.find((a) => a.id === agentId);
-    toast({
-      title: 'Ticket Assigned',
-      description: `Ticket ${ticketId} has been assigned to ${
-        agent?.name || 'the agent'
-      }.`,
-    });
+  const handleAssign = async (ticketId: string, agentId: string) => {
+    setIsAssigning(true);
+    const result = await assignTicketAction({ ticketId, agentId });
+    setIsAssigning(false);
+
+    if (result.success) {
+      toast({
+        title: 'Ticket Assigned',
+        description: `Ticket ${ticketId} has been assigned to ${result.agentName}.`,
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: result.error || 'Could not assign ticket.',
+      });
+    }
   };
 
   const columns: ColumnDef<Ticket>[] = React.useMemo(
@@ -145,7 +158,7 @@ export default function AgentTicketDataTable({
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
+                <Button variant="ghost" className="h-8 w-8 p-0" disabled={isAssigning}>
                   <span className="sr-only">Open menu</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -155,12 +168,12 @@ export default function AgentTicketDataTable({
                 <DropdownMenuItem asChild>
                    <Link href={`/tickets/${ticket.id}`}>View Details</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAssign(ticket.id, 'agent-1')}>
+                <DropdownMenuItem onClick={() => handleAssign(ticket.id, currentAgentId)} disabled={isAssigning}>
                     Assign to Me
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
+                  <DropdownMenuSubTrigger disabled={isAssigning}>
                     <UserPlus className="mr-2 h-4 w-4" />
                     <span>Assign to...</span>
                   </DropdownMenuSubTrigger>
@@ -169,6 +182,7 @@ export default function AgentTicketDataTable({
                       <DropdownMenuItem
                         key={agent.id}
                         onClick={() => handleAssign(ticket.id, agent.id)}
+                        disabled={isAssigning}
                       >
                         {agent.name}
                       </DropdownMenuItem>
@@ -181,7 +195,7 @@ export default function AgentTicketDataTable({
         },
       },
     ],
-    [agents, handleAssign]
+    [agents, handleAssign, currentAgentId, isAssigning]
   );
 
   const filteredData = React.useMemo(() => {
