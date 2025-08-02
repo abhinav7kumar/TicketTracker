@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -38,9 +39,11 @@ import { useToast } from '@/hooks/use-toast';
 import { createTicketAction } from '../../actions';
 
 const formSchema = z.object({
-  subject: z.string().min(5, 'Subject must be at least 5 characters.'),
-  category: z.enum(['Billing', 'Technical Support', 'General Inquiry', 'Bug Report']),
-  description: z.string().min(20, 'Description must be at least 20 characters.'),
+  subject: z.string().min(1, { message: 'Subject is required.' }),
+  category: z.enum(['Billing', 'Technical Support', 'General Inquiry', 'Bug Report'], {
+    required_error: 'Please select a category.',
+  }),
+  description: z.string().min(1, { message: 'Description is required.' }),
   attachments: z.any().optional(),
 });
 
