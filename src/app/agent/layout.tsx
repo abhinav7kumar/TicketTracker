@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
-  PlusCircle,
   Ticket,
   UserCircle,
   Users,
@@ -41,11 +40,6 @@ const navItems = [
     href: '/agent/dashboard',
     icon: LayoutDashboard,
     label: 'Dashboard',
-  },
-  {
-    href: '/tickets/new',
-    icon: PlusCircle,
-    label: 'New Ticket',
   },
    {
     href: '/agent/users',
