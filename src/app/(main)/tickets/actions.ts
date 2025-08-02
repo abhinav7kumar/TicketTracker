@@ -38,9 +38,16 @@ export async function createTicketAction(input: { subject: string; description: 
         console.log("Creating ticket:", input);
 
         await sendEmail({
-            to: 'user@example.com', // This would be the current user's email
-            subject: `Ticket Created: ${input.subject}`,
-            body: `<h1>New Ticket Created</h1><p>Your ticket "${input.subject}" has been created.</p>`,
+            to: 'abhinav.kumar9888@gmail.com',
+            subject: `[New Ticket] ${input.subject}`,
+            body: `<h1>New Ticket Created</h1>
+                   <p>A new ticket has been submitted with the following details:</p>
+                   <ul>
+                     <li><b>Subject:</b> ${input.subject}</li>
+                     <li><b>Category:</b> ${input.category}</li>
+                   </ul>
+                   <h3>Description:</h3>
+                   <p>${input.description}</p>`,
         });
 
         return { success: true };
