@@ -59,18 +59,18 @@ export default function TicketDetailPage({ params }: { params: { id: string } })
   const author = users.find((u) => u.id === ticket.createdBy);
 
   return (
-    <div className="grid md:grid-cols-3 gap-8">
-      <div className="md:col-span-2 space-y-6">
+    <div className="grid lg:grid-cols-3 gap-8">
+      <div className="lg:col-span-2 space-y-6">
         <Card>
           <CardHeader>
-            <div className="flex justify-between items-start">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
               <div>
                 <Badge variant={statusVariantMap[ticket.status as Ticket['status']]} className="mb-2">
                   {ticket.status}
                 </Badge>
-                <CardTitle className="font-headline text-3xl">{ticket.subject}</CardTitle>
+                <CardTitle className="font-headline text-2xl sm:text-3xl">{ticket.subject}</CardTitle>
               </div>
-              <div className="text-right text-sm text-muted-foreground">
+              <div className="text-left sm:text-right text-sm text-muted-foreground">
                 <p>Ticket ID: {ticket.id}</p>
                 <p>Category: {ticket.category}</p>
               </div>

@@ -86,7 +86,7 @@ export default function ProfilePage() {
   ).length;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight font-headline">
           User Profile
@@ -96,7 +96,7 @@ export default function ProfilePage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Tickets</CardTitle>
@@ -189,8 +189,8 @@ export default function ProfilePage() {
                 control={form.control}
                 name="notifications.newReplies"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
+                  <FormItem className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5 mb-2 sm:mb-0">
                       <FormLabel className="text-base">New Replies</FormLabel>
                       <FormDescription>
                         Receive an email when someone replies to your ticket.
@@ -209,8 +209,8 @@ export default function ProfilePage() {
                 control={form.control}
                 name="notifications.statusUpdates"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
+                  <FormItem className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5 mb-2 sm:mb-0">
                       <FormLabel className="text-base">
                         Status Updates
                       </FormLabel>
@@ -231,8 +231,8 @@ export default function ProfilePage() {
                 control={form.control}
                 name="notifications.newTickets"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
+                  <FormItem className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5 mb-2 sm:mb-0">
                       <FormLabel className="text-base">
                         Ticket Creation
                       </FormLabel>

@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const statusVariantMap: { [key: string]: 'default' | 'secondary' | 'outline' | 'destructive' } = {
   Open: 'default',
@@ -49,45 +50,47 @@ const statusVariantMap: { [key: string]: 'default' | 'secondary' | 'outline' | '
   Closed: 'destructive',
 };
 
-export const columns: ColumnDef<Ticket>[] = [
-  {
-    accessorKey: 'id',
-    header: 'Ticket ID',
-    cell: ({ row }) => (
-      <Button variant="link" asChild className="p-0">
-        <Link href={`/tickets/${row.original.id}`}>{row.getValue('id')}</Link>
-      </Button>
-    ),
-  },
-  {
-    accessorKey: 'subject',
-    header: 'Subject',
-    cell: ({ row }) => <div className="font-medium">{row.getValue('subject')}</div>,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => {
-      const status = row.getValue('status') as string;
-      return <Badge variant={statusVariantMap[status]}>{status}</Badge>;
-    },
-  },
-  {
-    accessorKey: 'category',
-    header: 'Category',
-  },
-  {
-    accessorKey: 'lastModified',
-    header: 'Last Modified',
-    cell: ({ row }) => formatDistanceToNow(new Date(row.getValue('lastModified')), { addSuffix: true }),
-  },
-];
 
 export default function TicketDataTable({ data }: { data: Ticket[] }) {
+  const isMobile = useIsMobile();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('all');
   const [categoryFilter, setCategoryFilter] = React.useState('all');
+
+  const columns: ColumnDef<Ticket>[] = React.useMemo(() => [
+    {
+      accessorKey: 'id',
+      header: 'Ticket ID',
+      cell: ({ row }) => (
+        <Button variant="link" asChild className="p-0 h-auto">
+          <Link href={`/tickets/${row.original.id}`}>{row.getValue('id')}</Link>
+        </Button>
+      ),
+    },
+    {
+      accessorKey: 'subject',
+      header: 'Subject',
+      cell: ({ row }) => <div className="font-medium">{row.getValue('subject')}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string;
+        return <Badge variant={statusVariantMap[status]}>{status}</Badge>;
+      },
+    },
+    {
+      accessorKey: 'category',
+      header: 'Category',
+    },
+    {
+      accessorKey: 'lastModified',
+      header: 'Last Modified',
+      cell: ({ row }) => formatDistanceToNow(new Date(row.getValue('lastModified')), { addSuffix: true }),
+    },
+  ], []);
 
   const filteredData = React.useMemo(() => {
     let filtered = data;
@@ -116,26 +119,35 @@ export default function TicketDataTable({ data }: { data: Ticket[] }) {
     initialState: {
         pagination: {
             pageSize: 10,
+        },
+        columnVisibility: {
+          category: !isMobile,
+          lastModified: !isMobile,
         }
     }
   });
 
+  React.useEffect(() => {
+    table.getColumn('category')?.toggleVisibility(!isMobile);
+    table.getColumn('lastModified')?.toggleVisibility(!isMobile);
+  }, [isMobile, table]);
+
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
-              placeholder="Search by subject or description..."
+              placeholder="Search by subject..."
               value={globalFilter ?? ''}
               onChange={(event) => setGlobalFilter(event.target.value)}
               className="pl-10"
             />
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -147,7 +159,7 @@ export default function TicketDataTable({ data }: { data: Ticket[] }) {
               </SelectContent>
             </Select>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by category" />
               </SelectTrigger>
               <SelectContent>
@@ -166,7 +178,7 @@ export default function TicketDataTable({ data }: { data: Ticket[] }) {
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="p-2 sm:p-4">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -186,7 +198,7 @@ export default function TicketDataTable({ data }: { data: Ticket[] }) {
                     data-state={row.getIsSelected() && 'selected'}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="p-2 sm:p-4">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
