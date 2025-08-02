@@ -1,5 +1,6 @@
 
 import type { User, Ticket } from './types';
+import { categories as defaultCategories } from './categories';
 
 export const users: User[] = [
   {
@@ -19,6 +20,15 @@ export const users: User[] = [
     role: 'user',
     registrationDate: '2024-03-15T08:30:00Z',
     lastLogin: '2024-05-24T09:15:00Z',
+  },
+    {
+    id: 'user-3',
+    name: 'David Smith',
+    email: 'david.s@example.com',
+    avatar: '/avatars/03.png',
+    role: 'user',
+    registrationDate: '2024-05-01T11:00:00Z',
+    lastLogin: '2024-05-26T10:00:00Z',
   },
   {
     id: 'agent-1',
@@ -60,6 +70,7 @@ export const tickets: Ticket[] = [
     createdBy: 'user-1',
     assignedTo: 'agent-1',
     createdAt: '2024-05-20T10:00:00Z',
+    resolvedAt: '2024-05-20T11:30:00Z',
     lastModified: '2024-05-23T14:30:00Z',
     feedback: 'upvote',
     comments: [
@@ -104,11 +115,12 @@ export const tickets: Ticket[] = [
     id: 'TKT-003',
     subject: 'Feature request: Dark mode',
     description: 'The application is great, but a dark mode option would be much easier on the eyes, especially when working at night. Please consider adding this feature.',
-    status: 'Open',
+    status: 'Closed',
     category: 'General Inquiry',
     createdBy: 'user-1',
     createdAt: '2024-05-24T16:00:00Z',
-    lastModified: '2024-05-24T16:00:00Z',
+    lastModified: '2024-05-26T10:00:00Z',
+    resolvedAt: '2024-05-26T10:00:00Z',
     comments: [],
   },
     {
@@ -155,6 +167,7 @@ export const tickets: Ticket[] = [
     assignedTo: 'agent-2',
     createdAt: '2024-05-18T10:00:00Z',
     lastModified: '2024-05-19T12:00:00Z',
+    resolvedAt: '2024-05-19T12:00:00Z',
     comments: [
         {
         id: 'comment-5',
@@ -163,6 +176,34 @@ export const tickets: Ticket[] = [
         content: "Hi Maria, this feature is not yet available, but we're planning to add it in a future update. I'll mark this ticket as closed for now.",
         createdAt: '2024-05-19T12:00:00Z',
       },
+    ],
+  },
+   {
+    id: 'TKT-007',
+    subject: 'Unable to login on mobile app',
+    description: "I'm using the latest version of the iOS app, but I keep getting a 'Login Failed' error, even though my credentials are correct. It works fine on the website.",
+    status: 'Resolved',
+    category: 'Technical Support',
+    createdBy: 'user-3',
+    assignedTo: 'agent-1',
+    createdAt: '2024-05-26T10:00:00Z',
+    resolvedAt: '2024-05-26T14:00:00Z',
+    lastModified: '2024-05-26T14:00:00Z',
+    comments: [
+       {
+        id: 'comment-6',
+        ticketId: 'TKT-007',
+        author: users.find(u => u.id === 'agent-1')!,
+        content: "Hi David, we had a temporary issue with our mobile authentication server. It should be resolved now. Could you please try logging in again?",
+        createdAt: '2024-05-26T11:00:00Z',
+      },
+      {
+        id: 'comment-7',
+        ticketId: 'TKT-007',
+        author: users.find(u => u.id === 'user-3')!,
+        content: "It's working now, thanks!",
+        createdAt: '2024-05-26T14:00:00Z',
+      }
     ],
   },
 ];

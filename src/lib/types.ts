@@ -22,11 +22,18 @@ export type Ticket = {
   subject: string;
   description: string;
   status: 'Open' | 'In Progress' | 'Resolved' | 'Closed';
-  category: 'Billing' | 'Technical Support' | 'General Inquiry' | 'Bug Report';
+  category: 'Billing' | 'Technical Support' | 'General Inquiry' | 'Bug Report' | string;
   createdBy: string; // User ID
   assignedTo?: string; // Agent User ID
   createdAt: string;
   lastModified: string;
+  resolvedAt?: string;
   comments: Comment[];
   feedback?: 'upvote' | 'downvote';
+};
+
+export type Category = {
+  id: string;
+  name: string;
+  description: string;
 };

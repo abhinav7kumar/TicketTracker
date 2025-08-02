@@ -8,6 +8,7 @@ import {
   Shield,
   LayoutDashboard,
   Users as UsersIcon,
+  Archive,
 } from 'lucide-react';
 import React from 'react';
 
@@ -24,10 +25,20 @@ import { users } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 
 const navItems = [
+   {
+    href: '/admin/dashboard',
+    icon: LayoutDashboard,
+    label: 'Dashboard',
+  },
   {
     href: '/admin/users',
     icon: UsersIcon,
-    label: 'User Management',
+    label: 'Users',
+  },
+  {
+    href: '/admin/categories',
+    icon: Archive,
+    label: 'Categories',
   },
 ];
 
@@ -57,7 +68,7 @@ export default function AdminLayout({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname === item.href ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${pathname.startsWith(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
