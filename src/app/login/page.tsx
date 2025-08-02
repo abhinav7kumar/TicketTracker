@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -163,6 +164,12 @@ export default function LoginPage() {
                 <Button variant="link" asChild className="p-0">
                   <Link href="/admin/login">Admin Login</Link>
                 </Button>
+              </div>
+              <Separator className="my-2" />
+               <div className="text-xs text-muted-foreground text-left w-full space-y-2">
+                  <p className="font-bold">Dummy Credentials:</p>
+                  <p><b>User:</b> alex.j@example.com / password</p>
+                  <p><b>Agent:</b> sam.w@support.com / password</p>
               </div>
             </CardFooter>
           </form>
