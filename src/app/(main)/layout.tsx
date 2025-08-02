@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -9,6 +10,7 @@ import {
   UserCircle,
   PanelLeft,
 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 import {
   SidebarProvider,
@@ -53,6 +55,44 @@ export default function AppLayout({
 }) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  const [profile, setProfile] = useState({ name: '', avatar: ''});
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedProfile = localStorage.getItem('userProfile');
+      if (storedProfile) {
+        try {
+          const parsedProfile = JSON.parse(storedProfile);
+          setProfile({
+            name: parsedProfile.name || 'User',
+            avatar: parsedProfile.avatar || '',
+          });
+        } catch (e) {
+          console.error("Failed to parse user profile from localStorage", e);
+        }
+      }
+      
+      const handleStorageChange = () => {
+        const updatedProfile = localStorage.getItem('userProfile');
+        if(updatedProfile) {
+            const parsed = JSON.parse(updatedProfile);
+            setProfile({ name: parsed.name, avatar: parsed.avatar });
+        }
+      };
+
+      window.addEventListener('storage', handleStorageChange);
+      // Set initial profile
+      handleStorageChange();
+
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+      };
+    }
+  }, []);
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('');
+  }
   
   return (
     <SidebarProvider>
@@ -119,10 +159,10 @@ export default function AppLayout({
                 >
                   <Avatar>
                     <AvatarImage
-                      src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                      src={profile.avatar}
                       alt="User Avatar"
                     />
-                    <AvatarFallback>AJ</AvatarFallback>
+                    <AvatarFallback>{getInitials(profile.name)}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
