@@ -1,3 +1,5 @@
+'use client';
+
 import { notFound } from 'next/navigation';
 import { tickets, users } from '@/lib/data';
 import {
@@ -13,6 +15,10 @@ import { format } from 'date-fns';
 import { CommentSection } from './components/comment-section';
 import { Button } from '@/components/ui/button';
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import type { Ticket } from '@/lib/types';
 
 const statusVariantMap: { [key: string]: 'default' | 'secondary' | 'outline' | 'destructive' } = {
   Open: 'default',
@@ -23,10 +29,32 @@ const statusVariantMap: { [key: string]: 'default' | 'secondary' | 'outline' | '
 
 export default function TicketDetailPage({ params }: { params: { id: string } }) {
   const ticket = tickets.find((t) => t.id === params.id);
+  const { toast } = useToast();
+  const [feedback, setFeedback] = useState<'upvote' | 'downvote' | null>(ticket?.feedback || null);
 
   if (!ticket) {
     notFound();
   }
+
+  const handleFeedback = (newFeedback: 'upvote' | 'downvote') => {
+    if (feedback === newFeedback) {
+      // If user clicks the same button again, deselect it.
+      setFeedback(null);
+      // In a real app, you would update the database here.
+      toast({
+        title: 'Feedback Removed',
+        description: 'Your feedback has been withdrawn.',
+      });
+    } else {
+      setFeedback(newFeedback);
+      // In a real app, you would update the database here.
+      toast({
+        title: 'Thank you for your feedback!',
+        description: 'We appreciate you helping us improve our support.',
+      });
+    }
+  };
+
 
   const author = users.find((u) => u.id === ticket.createdBy);
 
@@ -37,7 +65,7 @@ export default function TicketDetailPage({ params }: { params: { id: string } })
           <CardHeader>
             <div className="flex justify-between items-start">
               <div>
-                <Badge variant={statusVariantMap[ticket.status]} className="mb-2">
+                <Badge variant={statusVariantMap[ticket.status as Ticket['status']]} className="mb-2">
                   {ticket.status}
                 </Badge>
                 <CardTitle className="font-headline text-3xl">{ticket.subject}</CardTitle>
@@ -56,15 +84,29 @@ export default function TicketDetailPage({ params }: { params: { id: string } })
               <div className="mt-6 border-t pt-4">
                  <h3 className="text-lg font-semibold mb-2">Was this resolution helpful?</h3>
                  <div className="flex gap-2">
-                    <Button variant="outline" size="icon"><ThumbsUp className="h-4 w-4" /></Button>
-                    <Button variant="outline" size="icon"><ThumbsDown className="h-4 w-4" /></Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={() => handleFeedback('upvote')}
+                      className={cn(feedback === 'upvote' && 'bg-green-100 border-green-300 text-green-700 hover:bg-green-200')}
+                    >
+                      <ThumbsUp className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={() => handleFeedback('downvote')}
+                      className={cn(feedback === 'downvote' && 'bg-red-100 border-red-300 text-red-700 hover:bg-red-200')}
+                    >
+                      <ThumbsDown className="h-4 w-4" />
+                    </Button>
                  </div>
               </div>
             )}
           </CardContent>
         </Card>
 
-        <CommentSection comments={ticket.comments} />
+        <CommentSection comments={ticket.comments} ticketId={ticket.id} />
       </div>
 
       <div className="space-y-6">

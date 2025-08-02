@@ -9,27 +9,40 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import type { Comment } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { addCommentAction } from '../../actions';
 
-export function CommentSection({ comments }: { comments: Comment[] }) {
+export function CommentSection({ comments, ticketId }: { comments: Comment[], ticketId: string }) {
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleAddComment = (e: React.FormEvent) => {
+  const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
+    
+    const result = await addCommentAction({
+      ticketId,
+      content: newComment,
+    });
+    
+    if (result.success) {
       toast({
         title: 'Reply Added',
         description: 'Your reply has been posted.',
       });
       setNewComment('');
-      setIsSubmitting(false);
-      // In a real app, you would refetch comments here
-    }, 1000);
+      // In a real app, you would likely refetch comments here or optimistically update the UI
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: result.error || 'Could not post your reply.',
+      });
+    }
+
+    setIsSubmitting(false);
   };
 
   return (

@@ -36,7 +36,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { suggestTagsAction } from '../../actions';
+import { suggestTagsAction, createTicketAction } from '../../actions';
 
 const formSchema = z.object({
   subject: z.string().min(5, 'Subject must be at least 5 characters.'),
@@ -60,18 +60,26 @@ export default function NewTicketForm() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
-    console.log(values);
-    // Simulate API call
-    setTimeout(() => {
+    
+    const result = await createTicketAction(values);
+
+    if (result.success) {
       toast({
         title: 'Ticket Created!',
         description: 'Your new ticket has been successfully submitted.',
       });
       router.push('/dashboard');
-      setIsSubmitting(false);
-    }, 1500);
+    } else {
+       toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: result.error || 'Could not create the ticket.',
+      });
+    }
+
+    setIsSubmitting(false);
   };
   
   const handleSuggestTags = async () => {

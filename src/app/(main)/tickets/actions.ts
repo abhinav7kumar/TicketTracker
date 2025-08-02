@@ -2,6 +2,7 @@
 
 import { suggestTicketTags } from '@/ai/flows/suggest-ticket-tags';
 import { tickets } from '@/lib/data';
+import { sendEmail } from '@/services/email';
 
 export async function suggestTagsAction(input: { newTicketDescription: string }) {
   try {
@@ -29,4 +30,48 @@ export async function suggestTagsAction(input: { newTicketDescription: string })
     console.error('AI Tag Suggestion Error:', error);
     return { success: false, error: 'An unexpected error occurred while suggesting tags.' };
   }
+}
+
+export async function createTicketAction(input: { subject: string; description: string; category: string }) {
+    try {
+        // In a real app, you would save the ticket to the database here.
+        console.log("Creating ticket:", input);
+
+        await sendEmail({
+            to: 'user@example.com', // This would be the current user's email
+            subject: `Ticket Created: ${input.subject}`,
+            body: `<h1>New Ticket Created</h1><p>Your ticket "${input.subject}" has been created.</p>`,
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error("Create Ticket Error:", error);
+        return { success: false, error: "Failed to create ticket." };
+    }
+}
+
+
+export async function addCommentAction(input: { ticketId: string; content: string }) {
+    try {
+        // In a real app, you would save the comment to the database here.
+        console.log("Adding comment:", input);
+
+        const ticket = tickets.find((t) => t.id === input.ticketId);
+        if (!ticket) {
+            return { success: false, error: "Ticket not found." };
+        }
+
+        await sendEmail({
+            to: 'user@example.com', // This would be the ticket creator's email
+            subject: `New reply on ticket: ${ticket.subject}`,
+            body: `<h1>New Reply</h1><p>A new reply has been added to your ticket "${ticket.subject}".</p><p><b>Reply:</b> ${input.content}</p>`,
+        });
+
+        // Also notify mentioned users, etc.
+
+        return { success: true };
+    } catch (error) {
+        console.error("Add Comment Error:", error);
+        return { success: false, error: "Failed to add comment." };
+    }
 }
